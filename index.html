@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard Analizador</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #161b22;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            color: white;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #238636;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+        }
+        button:hover { background-color: #2ea043; }
+        #resultado {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .alerta-critica {
+            color: #ff453a;
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.03); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🛡️ PHISHGUARD SECURITY</h2>
+    <p>Ingresa la URL sospechosa para verificar su nivel de riesgo:</p>
+    <input type="text" id="urlInput" placeholder="https://ejemplo-banco-alerta.com...">
+    <button onclick="analizarURL()">ANALIZAR ENLACE</button>
+    <div id="resultado"></div>
+</div>
+
+<script>
+function analizarURL() {
+    const url = document.getElementById('urlInput').value.toLowerCase();
+    const resultadoDiv = document.getElementById('resultado');
+    
+    if(!url) {
+        resultadoDiv.innerHTML = "Por favor, escribe una URL.";
+        return;
+    }
+
+    let score = 0;
+    const palabrasClave = ["banco", "login", "soporte", "cuenta", "secure", "verificar", "actualizacion"];
+    
+    // Tu lógica heurística letal
+    palabrasClave.forEach(palabra => {
+        if (url.includes(palabra)) {
+            score += 30; 
+        }
+    });
+
+    // Contar subdominios
+    const puntos = (url.match(/\./g) || []).length;
+    if (puntos > 3) {
+        score += 40;
+    }
+
+    // Mostrar el resultado destructivo en pantalla
+    if (score >= 100) {
+        resultadoDiv.innerHTML = `
+            <div class="alerta-critica">
+                <p>NIVEL DE RIESGO: CRÍTICO 🚨</p>
+                <p>¡PUNTAJE: ${score}/100 PUNTOS!</p>
+                <p>¡PELIGRO INMINENTE! NO ENTRES A ESTE SITIO.</p>
+            </div>
+        `;
+    } else if (score > 0) {
+        resultadoDiv.innerHTML = `<span style="color: #ff9f0a;">RIESGO MODERADO ⚠️ (Puntaje: ${score}/100)</span>`;
+    } else {
+        resultadoDiv.innerHTML = `<span style="color: #30d158;">SITIO SEGURO ✅ (Puntaje: 0/100)</span>`;
+    }
+}
+</script>
+
+</body>
+</html>
