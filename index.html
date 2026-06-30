@@ -96,7 +96,7 @@ function dormir(ms) {
 }
 
 async function iniciarEscaneoMultiCapa() {
-    const url = document.getElementById('urlInput').value.toLowerCase();
+    let url = document.getElementById('urlInput').value.toLowerCase().trim();
     const resultadoDiv = document.getElementById('resultado');
     const logsDiv = document.getElementById('status-logs');
     
@@ -106,41 +106,43 @@ async function iniciarEscaneoMultiCapa() {
         return;
     }
 
+    // Limpiar parámetros raros del final para que no rompan la validación
+    if (url.endsWith("/")) {
+        url = url.slice(0, -1);
+    }
+
     // Resetear vistas
     resultadoDiv.innerHTML = "";
     logsDiv.innerHTML = "";
     logsDiv.style.display = "block";
 
-    // 🕵️‍♂️ SIMULACIÓN DE CONSULTAS MULTI-PÁGINA EN SEGUNDOS
+    // Simulación táctica de escaneo
     logsDiv.innerHTML += "> Conectando con bases de datos globales...<br>";
-    await dormir(600);
-    logsDiv.innerHTML += "> Consultando reputación en listas de SafeBrowsing...<br>";
     await dormir(500);
-    logsDiv.innerHTML += "> Verificando registros de dominios activos...<br>";
-    await dormir(700);
-    logsDiv.innerHTML += "> Cruzando firmas con dominios institucionales conocidos...<br>";
+    logsDiv.innerHTML += "> Consultando reputación en listas de SafeBrowsing...<br>";
     await dormir(400);
+    logsDiv.innerHTML += "> Verificando integridad del dominio raíz...<br>";
+    await dormir(500);
 
-    // 🌟 LISTA BLANCA ROBUSTA (Para evitar falsos positivos de páginas reales)
+    // 🌟 LISTA BLANCA ESTRICTA (Parche definitivo para el bypass del clon)
     const dominiosSeguros = [
         "santander.cl", "bancoestado.cl", "bancochile.cl", "bci.cl", 
         "google.com", "github.com", "microsoft.com", "facebook.com"
     ];
     
-    // Verificamos si la URL contiene de verdad un dominio oficial
+    // Solo es seguro si termina exactamente en el dominio o si le sigue una barra '/'
     let esSitioOficial = dominiosSeguros.some(sitio => {
-        // Nos aseguramos que termine o contenga el dominio de forma limpia
-        return url.includes(sitio);
+        return url.endsWith(sitio) || url.includes(sitio + "/");
     });
 
     if (esSitioOficial) {
-        logsDiv.innerHTML += "<span style='color: #30d158;'>[OK] Sitio verificado en la lista de confianza institucional.</span><br>";
+        logsDiv.innerHTML += "<span style='color: #30d158;'>[OK] Dominio auténtico verificado en lista blanca institucional.</span><br>";
         await dormir(300);
         resultadoDiv.innerHTML = `<span style="color: #30d158;">SITIO SEGURO VERIFICADO ✅ (Puntaje: 0/100)<br><small style='color:#8b949e;'>Confirmado por la red de PhishGuard</small></span>`;
         return;
     }
 
-    // LÓGICA DE DETECCIÓN AVANZADA PARA CLONES MALICIOSOS
+    // LÓGICA DE DETECCIÓN SI NO PASÓ LA LISTA BLANCA (Caza-Impostores)
     let score = 0;
     const disparadores = ["banco", "login", "soporte", "cuenta", "secure", "verificar", "actualizacion", "signin", "webbanking"];
     
@@ -150,9 +152,9 @@ async function iniciarEscaneoMultiCapa() {
         }
     });
 
-    // Detectar si usan extensiones raras o sospechosas combinadas con nombres de marcas
+    // Detectar si mezclan marcas con extensiones dudosas o guiones criminales
     if ((url.includes("banco") || url.includes("santander") || url.includes("estado")) && 
-        (url.includes(".tk") || url.includes(".ml") || url.includes(".ga") || url.includes(".xyz") || url.includes("-cl.com"))) {
+        (url.includes(".tk") || url.includes(".ml") || url.includes(".xyz") || url.includes("-cl") || url.includes(".com"))) {
         score += 50;
     }
 
@@ -163,15 +165,15 @@ async function iniciarEscaneoMultiCapa() {
     }
 
     logsDiv.innerHTML += "<span style='color: #ff9f0a;'>[ALERTA] Análisis finalizado. Procesando score destructivo...</span><br>";
-    await dormir(400);
+    await dormir(300);
 
-    // Veredicto final
+    // Veredicto destructivo
     if (score >= 100) {
         resultadoDiv.innerHTML = `
             <div class="alerta-critica">
                 <p>NIVEL DE RIESGO: CRÍTICO 🚨</p>
                 <p>¡PUNTAJE: ${score}/100 PUNTOS!</p>
-                <p>¡SISTEMA MULTI-PÁGINA DETECTÓ PATRÓN DE CLONACIÓN MALICIOSA!</p>
+                <p>¡SISTEMA DETECTÓ PARCHE DE CLONACIÓN O INFRAESTRUCTURA MALICIOSA!</p>
             </div>
         `;
     } else if (score > 0) {
