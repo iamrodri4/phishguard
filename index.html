@@ -24,6 +24,7 @@
             text-align: center;
             width: 90%;
             max-width: 500px;
+            border: 1px solid #30363d;
         }
         input {
             width: 100%;
@@ -44,8 +45,11 @@
             cursor: pointer;
             border-radius: 4px;
             width: 100%;
+            font-weight: bold;
         }
-        button:hover { background-color: #2ea043; }
+        button:hover { 
+            background-color: #2ea043; 
+        }
         #resultado {
             margin-top: 20px;
             font-size: 18px;
@@ -76,28 +80,41 @@ function analizarURL() {
     const url = document.getElementById('urlInput').value.toLowerCase();
     const resultadoDiv = document.getElementById('resultado');
     
+    // Si no escriben nada, avisamos
     if(!url) {
-        resultadoDiv.innerHTML = "Por favor, escribe una URL.";
+        resultadoDiv.innerHTML = "<span style='color: #ff9f0a;'>Por favor, escribe una URL.</span>";
         return;
     }
 
+    // 🌟 LISTA BLANCA: Páginas oficiales que no deben dar alerta
+    const paginasSeguras = ["banco.santander.cl", "santander.cl", "bancoestado.cl", "bancochile.cl"];
+    
+    // Verificar si coincide exactamente con una real
+    let esSegura = paginasSeguras.some(sitio => url.includes(sitio));
+
+    if (esSegura) {
+        resultadoDiv.innerHTML = `<span style="color: #30d158;">SITIO SEGURO VERIFICADO ✅ (Puntaje: 0/100)</span>`;
+        return; // Detiene el análisis porque es confiable
+    }
+
+    // Lógica para detectar clones tramposos
     let score = 0;
     const palabrasClave = ["banco", "login", "soporte", "cuenta", "secure", "verificar", "actualizacion"];
     
-    // Tu lógica heurística letal
+    // Suma 30 puntos por cada palabra peligrosa
     palabrasClave.forEach(palabra => {
         if (url.includes(palabra)) {
             score += 30; 
         }
     });
 
-    // Contar subdominios
+    // Contar si tiene demasiados puntos (subdominios sospechosos)
     const puntos = (url.match(/\./g) || []).length;
     if (puntos > 3) {
         score += 40;
     }
 
-    // Mostrar el resultado destructivo en pantalla
+    // Mostrar los resultados finales con el "efecto susto"
     if (score >= 100) {
         resultadoDiv.innerHTML = `
             <div class="alerta-critica">
