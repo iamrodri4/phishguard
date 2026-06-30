@@ -2,187 +2,60 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PhishGuard Advanced Shield</title>
     <style>
-        body {
-            background-color: #0d1117;
-            color: #c9d1d9;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background-color: #161b22;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            text-align: center;
-            width: 90%;
-            max-width: 500px;
-            border: 1px solid #30363d;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 15px 0;
-            background-color: #0d1117;
-            border: 1px solid #30363d;
-            color: white;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #238636;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 4px;
-            width: 100%;
-            font-weight: bold;
-        }
-        button:hover { 
-            background-color: #2ea043; 
-        }
-        #status-logs {
-            text-align: left;
-            background-color: #0d1117;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #21262d;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            margin-top: 15px;
-            display: none;
-            color: #58a6ff;
-        }
-        #resultado {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .alerta-critica {
-            color: #ff453a;
-            animation: pulse 1s infinite alternate;
-        }
-        @keyframes pulse {
-            from { transform: scale(1); }
-            to { transform: scale(1.03); }
-        }
+        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .container { background-color: #161b22; padding: 30px; border-radius: 12px; border: 1px solid #30363d; width: 90%; max-width: 500px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 20px 0; background-color: #010409; border: 1px solid #30363d; color: #58a6ff; border-radius: 6px; box-sizing: border-box; }
+        button { background-color: #238636; color: white; border: none; padding: 12px 20px; cursor: pointer; border-radius: 6px; width: 100%; font-weight: bold; }
+        button:hover { background-color: #2ea043; }
+        #resultado { margin-top: 20px; font-size: 1.1rem; padding: 10px; border-radius: 6px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🛡️ PHISHGUARD ADVANCED SHIELD</h2>
-    <p>Análisis Multi-Capa Heurístico y de Reputación</p>
-    <input type="text" id="urlInput" placeholder="https://enlace-sospechoso.com...">
-    <button onclick="iniciarEscaneoMultiCapa()">ANALIZAR EN SECUNDOS</button>
-    
-    <div id="status-logs"></div>
-    
+    <h2>🛡️ PHISHGUARD GLOBAL</h2>
+    <input type="text" id="urlInput" placeholder="https://ejemplo.com">
+    <button onclick="analizarReal()">ESCANEO GLOBAL</button>
     <div id="resultado"></div>
 </div>
 
 <script>
-function dormir(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function iniciarEscaneoMultiCapa() {
-    let url = document.getElementById('urlInput').value.toLowerCase().trim();
-    const resultadoDiv = document.getElementById('resultado');
-    const logsDiv = document.getElementById('status-logs');
+async function analizarReal() {
+    const input = document.getElementById('urlInput').value.trim();
+    const resDiv = document.getElementById('resultado');
     
-    if(!url) {
-        resultadoDiv.innerHTML = "<span style='color: #ff9f0a;'>Por favor, escribe una URL.</span>";
-        logsDiv.style.display = "none";
+    // Sanitización: Quitamos cualquier cosa que parezca código HTML para evitar inyecciones
+    const urlSegura = input.replace(/<[^>]*>?/gm, '');
+
+    if (!urlSegura) {
+        resDiv.textContent = "Por favor, ingresa una URL válida.";
         return;
     }
 
-    // Limpiar parámetros raros del final para que no rompan la validación
-    if (url.endsWith("/")) {
-        url = url.slice(0, -1);
-    }
+    resDiv.textContent = "Analizando en bases de datos globales...";
+    resDiv.style.color = "#c9d1d9";
 
-    // Resetear vistas
-    resultadoDiv.innerHTML = "";
-    logsDiv.innerHTML = "";
-    logsDiv.style.display = "block";
-
-    // Simulación táctica de escaneo
-    logsDiv.innerHTML += "> Conectando con bases de datos globales...<br>";
-    await dormir(500);
-    logsDiv.innerHTML += "> Consultando reputación en listas de SafeBrowsing...<br>";
-    await dormir(400);
-    logsDiv.innerHTML += "> Verificando integridad del dominio raíz...<br>";
-    await dormir(500);
-
-    // 🌟 LISTA BLANCA ESTRICTA (Parche definitivo para el bypass del clon)
-    const dominiosSeguros = [
-        "santander.cl", "bancoestado.cl", "bancochile.cl", "bci.cl", 
-        "google.com", "github.com", "microsoft.com", "facebook.com"
-    ];
-    
-    // Solo es seguro si termina exactamente en el dominio o si le sigue una barra '/'
-    let esSitioOficial = dominiosSeguros.some(sitio => {
-        return url.endsWith(sitio) || url.includes(sitio + "/");
-    });
-
-    if (esSitioOficial) {
-        logsDiv.innerHTML += "<span style='color: #30d158;'>[OK] Dominio auténtico verificado en lista blanca institucional.</span><br>";
-        await dormir(300);
-        resultadoDiv.innerHTML = `<span style="color: #30d158;">SITIO SEGURO VERIFICADO ✅ (Puntaje: 0/100)<br><small style='color:#8b949e;'>Confirmado por la red de PhishGuard</small></span>`;
-        return;
-    }
-
-    // LÓGICA DE DETECCIÓN SI NO PASÓ LA LISTA BLANCA (Caza-Impostores)
-    let score = 0;
-    const disparadores = ["banco", "login", "soporte", "cuenta", "secure", "verificar", "actualizacion", "signin", "webbanking"];
-    
-    disparadores.forEach(palabra => {
-        if (url.includes(palabra)) {
-            score += 30; 
+    try {
+        // Extraemos solo el dominio para la consulta
+        const hostname = new URL(urlSegura.startsWith('http') ? urlSegura : `https://${urlSegura}`).hostname;
+        
+        const response = await fetch(`https://check.api.urlscan.io/v1/search/?q=domain:${hostname}`);
+        const data = await response.json();
+        
+        if (data.total > 0) {
+            resDiv.textContent = "ALERTA: Este dominio ha sido detectado con actividad sospechosa anteriormente.";
+            resDiv.style.color = "#ff453a";
+        } else {
+            resDiv.textContent = "SITIO LIMPIO: No hay reportes negativos en la base de datos.";
+            resDiv.style.color = "#30d158";
         }
-    });
-
-    // Detectar si mezclan marcas con extensiones dudosas o guiones criminales
-    if ((url.includes("banco") || url.includes("santander") || url.includes("estado")) && 
-        (url.includes(".tk") || url.includes(".ml") || url.includes(".xyz") || url.includes("-cl") || url.includes(".com"))) {
-        score += 50;
-    }
-
-    // Contar subdominios excesivos
-    const puntos = (url.match(/\./g) || []).length;
-    if (puntos > 3) {
-        score += 40;
-    }
-
-    logsDiv.innerHTML += "<span style='color: #ff9f0a;'>[ALERTA] Análisis finalizado. Procesando score destructivo...</span><br>";
-    await dormir(300);
-
-    // Veredicto destructivo
-    if (score >= 100) {
-        resultadoDiv.innerHTML = `
-            <div class="alerta-critica">
-                <p>NIVEL DE RIESGO: CRÍTICO 🚨</p>
-                <p>¡PUNTAJE: ${score}/100 PUNTOS!</p>
-                <p>¡SISTEMA DETECTÓ PARCHE DE CLONACIÓN O INFRAESTRUCTURA MALICIOSA!</p>
-            </div>
-        `;
-    } else if (score > 0) {
-        resultadoDiv.innerHTML = `<span style="color: #ff9f0a;">RIESGO MODERADO ⚠️ (Puntaje: ${score}/100)<br><small style='color:#8b949e;'>Se recomienda precaución</small></span>`;
-    } else {
-        resultadoDiv.innerHTML = `<span style="color: #30d158;">SITIO LIMPIO ✅ (Puntaje: 0/100)</span>`;
+    } catch (e) {
+        resDiv.textContent = "Error al conectar. Verifica que la URL tenga formato correcto (ej: google.com).";
+        resDiv.style.color = "#ff9f0a";
     }
 }
 </script>
-
 </body>
 </html>
