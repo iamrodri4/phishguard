@@ -1,0 +1,13 @@
+REPORTE DE SEGURIDAD - PHISHGUARD
+URL Analizada: http://banco-login-verificar-cuenta-soporte.com/signin
+Dominio: banco-login-verificar-cuenta-soporte.com
+IP Servidor: Desconocida
+Nivel de Riesgo: ALTO 🚨
+Puntuación: 130/100
+Detalles:
+ - Contiene palabra clave sospechosa: "banco"
+ - Contiene palabra clave sospechosa: "login"
+ - Contiene palabra clave sospechosa: "soporte"
+ - Contiene palabra clave sospechosa: "cuenta"
+ - No tiene registros DNS válidos o está caído temporalmente.
+Fecha: 2026-06-30T17:04:10.434Z
